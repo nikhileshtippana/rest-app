@@ -3,6 +3,7 @@ package com.nik.rest.app.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nik.rest.app.ServiceException;
 import com.nik.rest.app.domain.User;
+import com.nik.rest.app.service.UserService;
 
 @RequestMapping("/users")
 @RestController
@@ -21,14 +24,17 @@ public class UserController {
 	private static List<User> users = new ArrayList<User>();
 	
 	static {
-		users.add(new User(1, "Nikhilesh", "Tippana"));
-    	users.add(new User(2, "Priyanka", "Tera"));
+		users.add(new User(1L, "Nikhilesh", "Tippana"));
+    	users.add(new User(2L, "Priyanka", "Tera"));
 	}
+	
+	@Autowired
+	private UserService userService;
 	
     @GetMapping
     public List<User> all() {
     	
-        return users;
+        return userService.getUsers();
     }
 	
     @GetMapping("/{id}")
@@ -45,13 +51,9 @@ public class UserController {
     }
 	
     @PostMapping
-    public User add(@RequestBody User user) {
+    public User add(@RequestBody User user) throws ServiceException {
     	
-    	user.setId(users.size() + 1);
-    	
-    	users.add(user);
-    	
-        return user;
+        return userService.addUser(user);
     }
 	
     @PutMapping("/{id}")
