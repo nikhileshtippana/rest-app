@@ -9,6 +9,12 @@ public interface UserService {
 	
 	List<User> getUsers();
 	
+	User getUser(Long id);
+	
 	User addUser(User user) throws ServiceException;
+	
+	User updateUser(User user) throws ServiceException;
+	
+	User deleteUser(Long id);
 
 }

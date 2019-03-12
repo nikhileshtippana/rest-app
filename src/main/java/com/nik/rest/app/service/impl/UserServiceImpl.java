@@ -2,6 +2,7 @@ package com.nik.rest.app.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,22 @@ public class UserServiceImpl implements UserService {
 		
 		try {
 			return (List<User>) userRepository.findAll();
+			
+		} catch (Exception e) {
+			
+			System.out.println("Caught '" + e.getClass().getName() + "' with message: " + e.getMessage());
+		}
+		
+		return null;
+	}
+
+	@Override
+	public User getUser(Long id) {
+		
+		try {
+			Optional<User> user = userRepository.findById(id);
+			
+			return user.isPresent() ? user.get() : null;
 			
 		} catch (Exception e) {
 			
@@ -72,6 +89,46 @@ public class UserServiceImpl implements UserService {
 			
 			throw new ServiceException(message);
 		}
+	}
+
+	@Override
+	public User updateUser(User user) throws ServiceException {
+		
+		validateUser(user);
+		
+		try {
+			User updatedUser = userRepository.save(user);
+			
+			System.out.println("Updated user " + updatedUser.fullName());
+			
+			return updatedUser;
+			
+		} catch (Exception e) {
+			
+			System.out.println("Caught '" + e.getClass().getName() + "' with message: " + e.getMessage());
+		}
+		
+		return null;
+	}
+
+	@Override
+	public User deleteUser(Long id) {
+		
+		User user = getUser(id);
+		
+		try {
+			userRepository.deleteById(id);
+			
+			System.out.println("Deleted user " + user.fullName());
+			
+			return user;
+			
+		} catch (Exception e) {
+			
+			System.out.println("Caught '" + e.getClass().getName() + "' with message: " + e.getMessage());
+		}
+		
+		return null;
 	}
 
 }

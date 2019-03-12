@@ -1,6 +1,5 @@
 package com.nik.rest.app.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +20,6 @@ import com.nik.rest.app.service.UserService;
 @RestController
 public class UserController {
 
-	private static List<User> users = new ArrayList<User>();
-	
-	static {
-		users.add(new User(1L, "Nikhilesh", "Tippana"));
-    	users.add(new User(2L, "Priyanka", "Tera"));
-	}
-	
 	@Autowired
 	private UserService userService;
 	
@@ -38,16 +30,9 @@ public class UserController {
     }
 	
     @GetMapping("/{id}")
-    public User user(@PathVariable("id") long id) {
+    public User user(@PathVariable("id") Long id) {
     	
-    	for (User user : users) {
-    		
-    		if (user.getId() == id) {
-    			return user;
-    		}
-    	}
-    	
-        return null;
+        return userService.getUser(id);
     }
 	
     @PostMapping
@@ -57,23 +42,16 @@ public class UserController {
     }
 	
     @PutMapping("/{id}")
-    public User update(@PathVariable("id") long id, @RequestBody User user) {
+    public User update(@PathVariable("id") Long id, @RequestBody User user) throws ServiceException {
     	
-    	User u = user(id);
+    	user.setId(id);
     	
-    	u.setFirstName(user.getFirstName());
-    	u.setLastName(user.getLastName());
-    	
-        return u;
+        return userService.updateUser(user);
     }
 	
     @DeleteMapping("/{id}")
-    public User update(@PathVariable("id") long id) {
+    public User update(@PathVariable("id") Long id) {
     	
-    	User u = user(id);
-    	
-    	users.remove(u);
-    	
-        return u;
+        return userService.deleteUser(id);
     }
 }
