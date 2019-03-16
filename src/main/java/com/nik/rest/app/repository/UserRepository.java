@@ -1,15 +1,9 @@
 package com.nik.rest.app.repository;
 
-import java.util.List;
-
 import org.springframework.data.repository.CrudRepository;
 
-import com.nik.rest.app.domain.User;
+import com.nik.rest.app.entity.UserEntity;
 
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends CrudRepository<UserEntity, Long> {
 	
-	List<User> findByFirstName(String firstName);
-	
-	List<User> findByLastName(String lastName);
-
 }

@@ -12,8 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nik.rest.app.ServiceException;
+import com.nik.rest.app.constant.AddressType;
+import com.nik.rest.app.domain.Address;
 import com.nik.rest.app.domain.User;
+import com.nik.rest.app.domain.UserDetail;
+import com.nik.rest.app.entity.AddressEntity;
+import com.nik.rest.app.entity.UserEntity;
+import com.nik.rest.app.exception.ServiceException;
+import com.nik.rest.app.service.AddressService;
 import com.nik.rest.app.service.UserService;
 
 @RequestMapping("/users")
@@ -22,36 +28,107 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private AddressService addressService;
 	
     @GetMapping
     public List<User> all() {
     	
-        return userService.getUsers();
+    	List<UserEntity> userEntities = userService.getUsers();
+    	
+    	return User.instance(userEntities);
     }
 	
     @GetMapping("/{id}")
-    public User user(@PathVariable("id") Long id) {
+    public User getUser(@PathVariable("id") long id) throws ServiceException {
     	
-        return userService.getUser(id);
+    	UserEntity userEntity = userService.getUser(id);
+    	
+        return User.instance(userEntity);
+    }
+	
+    @GetMapping("/{id}/detail")
+    public User getUserDetail(@PathVariable("id") long id) throws ServiceException {
+    	
+    	UserEntity userEntity = userService.getUser(id);
+    	
+    	AddressEntity addressEntity = addressService.getAddress(userEntity.getId(), AddressType.PHYSICAL.getCode());
+    	
+        return UserDetail.instance(userEntity, addressEntity);
+    }
+	
+    @GetMapping("/{id}/addresses")
+    public List<Address> getUserAddresses(@PathVariable("id") long id) throws ServiceException {
+    	
+    	List<AddressEntity> addressEntities = addressService.getAddressesByEntityId(id);
+    	
+        return Address.instance(addressEntities);
     }
 	
     @PostMapping
-    public User add(@RequestBody User user) throws ServiceException {
+    public User addUser(@RequestBody User user) throws ServiceException {
     	
-        return userService.addUser(user);
+		UserEntity userEntity = userService.addUser(user.getFirstName(), user.getLastName(), user.isMale(),
+				user.getBirthDate());
+    	
+        return User.instance(userEntity);
+    }
+	
+    @PostMapping("/detail")
+    public UserDetail addUserDetail(@RequestBody UserDetail userDetail) throws ServiceException {
+    	
+		UserEntity userEntity = userService.addUser(userDetail.getFirstName(), userDetail.getLastName(),
+				userDetail.isMale(), userDetail.getBirthDate());
+		
+		Address address = userDetail.getAddress();
+		AddressEntity addressEntity = null;
+		
+		if (address != null) {
+			
+			addressEntity = addressService.addAddress(userEntity.getId(), AddressType.PHYSICAL.getCode(), address.getStreet1(),
+					address.getStreet2(), address.getCity(), address.getState(), address.getCountry(),
+					address.getZip());
+		}
+    	
+        return UserDetail.instance(userEntity, addressEntity);
     }
 	
     @PutMapping("/{id}")
-    public User update(@PathVariable("id") Long id, @RequestBody User user) throws ServiceException {
+    public User updateUser(@PathVariable("id") long id, @RequestBody User user) throws ServiceException {
     	
-    	user.setId(id);
+		UserEntity userEntity = userService.updateUser(id, user.getFirstName(), user.getLastName(), user.isMale(),
+				user.getBirthDate());
     	
-        return userService.updateUser(user);
+        return User.instance(userEntity);
+    }
+	
+    @PutMapping("/{id}/detail")
+    public UserDetail updateUserDetail(@PathVariable("id") long id, @RequestBody UserDetail userDetail) throws ServiceException {
+    	
+		UserEntity userEntity = userService.updateUser(id, userDetail.getFirstName(), userDetail.getLastName(),
+				userDetail.isMale(), userDetail.getBirthDate());
+		
+		Address address = userDetail.getAddress();
+		AddressEntity addressEntity = null;
+		
+		if (address != null) {
+			
+			addressEntity = addressService.updateAddress(userEntity.getId(), AddressType.PHYSICAL.getCode(), address.getStreet1(),
+					address.getStreet2(), address.getCity(), address.getState(), address.getCountry(),
+					address.getZip());
+		}
+    	
+        return UserDetail.instance(userEntity, addressEntity);
     }
 	
     @DeleteMapping("/{id}")
-    public User update(@PathVariable("id") Long id) {
+    public User update(@PathVariable("id") Long id) throws ServiceException {
     	
-        return userService.deleteUser(id);
+    	UserEntity userEntity = userService.deleteUser(id);
+    	
+    	addressService.deleteAddressesByEntityId(userEntity.getId());
+    	
+        return User.instance(userEntity);
     }
 }

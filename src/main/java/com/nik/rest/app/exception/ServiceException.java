@@ -1,4 +1,4 @@
-package com.nik.rest.app;
+package com.nik.rest.app.exception;
 
 public class ServiceException extends Exception {
 

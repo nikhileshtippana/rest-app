@@ -1,20 +1,20 @@
 package com.nik.rest.app.service;
 
+import java.util.Date;
 import java.util.List;
 
-import com.nik.rest.app.ServiceException;
-import com.nik.rest.app.domain.User;
+import com.nik.rest.app.entity.UserEntity;
+import com.nik.rest.app.exception.ServiceException;
 
 public interface UserService {
-	
-	List<User> getUsers();
-	
-	User getUser(Long id);
-	
-	User addUser(User user) throws ServiceException;
-	
-	User updateUser(User user) throws ServiceException;
-	
-	User deleteUser(Long id);
 
+	List<UserEntity> getUsers();
+
+	UserEntity getUser(long id) throws ServiceException;
+
+	UserEntity addUser(String firstName, String lastName, boolean male, Date birthDate) throws ServiceException;
+
+	UserEntity updateUser(long id, String firstName, String lastName, boolean male, Date birthDate) throws ServiceException;
+
+	UserEntity deleteUser(long id) throws ServiceException;
 }

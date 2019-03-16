@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.nik.rest</groupId>
 	<artifactId>rest-app</artifactId>
-	<version>2.0.0</version>
+	<version>3.0.0</version>
 	<name>Nik Rest App</name>
 
 	<properties>
@@ -37,6 +37,11 @@
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-lang3</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-collections4</artifactId>
+		    <version>4.1</version>
 		</dependency>
 	</dependencies>
 
